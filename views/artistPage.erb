@@ -1,0 +1,25 @@
+<div class="col-md-12">
+  <h2><%= @artistName %></h2>
+  <p><%= @genres %></p>
+</div>
+
+<div class="col-md-6">
+  <img src="<%= @photoURL %>" alt="<%= @artistName %>">
+  <p>Image from <%= @photoAttribution %></p>
+</div>
+
+<div class="col-md-6">
+  <h3>Most Popular Songs</h3>
+  <ol>
+    <% @songs.each do |song| %>
+      <li><%= song[0] %> (<%= song[1] %>)</li>
+    <% end %>
+  </ol>
+
+  <iframe width="560" height="315" src="http://www.youtube.com/embed/<%= @songs[0][1] %>?playlist=<%= @urls %>" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<div class="col-md-12">
+  <h3>Biography</h3>
+  <p><%= @biography %></p>
+</div>

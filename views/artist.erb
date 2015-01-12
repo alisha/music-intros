@@ -1,0 +1,47 @@
+<div class="col-md-12">
+  <form method="post" class="form-inline">
+    <label class="h1">Music Intros</label>
+    
+    <div class="form-group">
+      <input type="text" name="artist" placeholder="Search for another artist..." class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit!</button>
+  </form>
+
+  <h2><%= @artistName %></h2>
+</div>
+
+<div class="col-md-12">
+  <div class="col-md-6">
+    <% if @genres != "" %>
+      <p><b>Genres:</b> <%= @genres %></p>
+    <% end %>
+
+    <% if @relatedArtists != "" %>
+      <p><b>Related artists:</b> <%= @relatedArtists %></p>
+    <% end %>
+
+    <img src="<%=@photoURL%>">
+  </div>
+
+  <% if @topTracks.length > 0 %>
+    <div class="col-md-6">
+      <h3>Most popular songs</h3>
+      <ol>
+        <% @topTracks.each do |song| %>
+          <li><%= song %></li>
+        <% end %>
+      </ol>
+
+      <iframe width="560" height="315" src="http://www.youtube.com/embed/<%= @youTubeURLs[0] %>?playlist=<%= @youTubeURLs[1..4].join(',') %>" frameborder="0" allowfullscreen></iframe>
+    </div>
+  <% end %>
+</div>
+
+<% if @genres != "" %>
+  <div class="col-md-12 biography">
+    <h3>Biography</h3>
+    <%= @biography %>
+  </div>
+<% end %>

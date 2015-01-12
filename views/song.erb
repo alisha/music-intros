@@ -1,0 +1,10 @@
+<h2><%= @artistName %></h2>
+
+<h3>Most Popular Songs</h3>
+<ol>
+  <% @songs.each do |song| %>
+    <li><%= song[0] %> (<%= song[1] %>)</li>
+  <% end %>
+</ol>
+
+<iframe width="560" height="315" src="http://www.youtube.com/embed/<%= @songs[0][1] %>?playlist=<%= @urls %>" frameborder="0" allowfullscreen></iframe>
