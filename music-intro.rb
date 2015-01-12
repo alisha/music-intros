@@ -2,6 +2,7 @@ require 'sinatra'
 require 'shotgun'
 require 'httparty'
 require 'json'
+require 'rspotify'
 require_relative 'secret'
 
 # home
@@ -9,15 +10,22 @@ get '/' do
   erb :index
 end
 
+
 # when a user searches for an artist, redirect them to that artist's page
 post '/' do
   @artistNameEscaped = params[:artist].gsub(' ', '%20')
   redirect to("/artist/#{@artistNameEscaped}")
 end
 
+
 post '/artist/*' do
   @artistNameEscaped = params[:artist].gsub(' ', '%20')
   redirect to("/artist/#{@artistNameEscaped}")
+end
+
+
+get '/error' do
+  erb :error
 end
 
 
@@ -26,29 +34,21 @@ get '/artist/:artist' do
   # artist name
   artistName = params[:artist]
 
-  # get spotify id, photo, and genres
-  artistRequest = HTTParty.get('https://api.spotify.com/v1/search', :query => {
-    :q => artistName,
-    :type => "artist"
-  })
+  # get name, photo, and genres
+  artist = RSpotify::Artist.search(artistName).first
 
-  artistResponse = JSON.parse(artistRequest.body)["artists"]["items"][0]
-
-  spotifyId = artistResponse["id"]
-  @artistName = artistResponse["name"]
-  @photoURL = artistResponse["images"][0]["url"]
-  @genres = artistResponse["genres"].join(", ")
+  @artistName = artist.name
+  @photoURL = artist.images[0]["url"]
+  @genres = artist.genres.join(", ")
 
   # get related artists
-  relatedArtistsRequest = HTTParty.get("https://api.spotify.com/v1/artists/#{spotifyId}/related-artists")
-
-  relatedArtistsResponse = JSON.parse(relatedArtistsRequest.body)["artists"]
+  relatedArtistsList = artist.related_artists
 
   @relatedArtists = Array.new
 
-  if relatedArtistsResponse.length > 0
-    for i in 0..4
-      @relatedArtists.push(relatedArtistsResponse[i]["name"])
+  if relatedArtistsList.length > 0
+    while @relatedArtists.length < 5 && @relatedArtists.length < relatedArtistsList.length
+      @relatedArtists.push(relatedArtistsList[@relatedArtists.length].name)
     end
 
     @relatedArtists = @relatedArtists.join(", ")
@@ -57,18 +57,15 @@ get '/artist/:artist' do
   end
 
   # get artist's most popular songs
-  topTracksRequest = HTTParty.get("https://api.spotify.com/v1/artists/#{spotifyId}/top-tracks", :query => {
-    "country" => "US"
-  })
-
-  topTracksResponse = JSON.parse(topTracksRequest.body)["tracks"]
+  topTracksList = artist.top_tracks(:US)
 
   @topTracks = Array.new
   @youTubeURLs = Array.new
 
-  if topTracksResponse.length >= 5
-    for i in 0..4
-      name = topTracksResponse[i]["name"]
+  if topTracksList.length > 0
+
+    while @topTracks.length < 5
+      name = topTracksList[@topTracks.length].name
 
       # get song title
       @topTracks.push(name)

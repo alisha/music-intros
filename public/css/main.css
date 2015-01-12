@@ -42,3 +42,11 @@ input, button {
 input[type="text"] {
   min-width: 190px;
 }
+
+a:link {
+  color: #67706C;
+}
+
+a:visited {
+  color: #67706C;
+}
