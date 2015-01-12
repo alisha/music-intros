@@ -7,6 +7,26 @@ require_relative 'secret'
 
 # home
 get '/' do
+  # get popular artists
+  artistsRequest = HTTParty.get("http://developer.echonest.com/api/v4/artist/top_hottt", :query => {
+    :api_key => EN_API_KEY,
+    :format => "json",
+    :results => 5
+  })
+
+  @topArtists = Array.new
+
+  artistsResponse = JSON.parse(artistsRequest.body)["response"]
+
+  if artistsResponse["status"]["code"] == 0 && artistsResponse["artists"].length > 0
+
+    artistsResponse["artists"].each do |artist|
+      @topArtists.push(artist["name"])
+      puts artist
+    end
+
+  end
+
   erb :index
 end
 
