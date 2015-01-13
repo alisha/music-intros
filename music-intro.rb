@@ -5,6 +5,12 @@ require 'json'
 require 'rspotify'
 require_relative 'secret'
 
+
+error 400..510 do
+  redirect to('/error')
+end
+
+
 # home
 get '/' do
   # get popular artists
@@ -22,7 +28,6 @@ get '/' do
 
     artistsResponse["artists"].each do |artist|
       @topArtists.push(artist["name"])
-      puts artist
     end
 
   end
@@ -49,25 +54,43 @@ get '/error' do
 end
 
 
+post '/error' do
+  @artistNameEscaped = params[:artist].gsub(' ', '%20')
+  redirect to("/artist/#{@artistNameEscaped}")
+end
+
+
 get '/artist/:artist' do
 
   # artist name
   artistName = params[:artist]
-
+  
   # get name, photo, and genres
-  artist = RSpotify::Artist.search(artistName).first
+  artists = RSpotify::Artist.search(artistName)
+  
+  if artists.nil? || artists.length == 0
+    redirect to ("/error")
+  end
 
+  artist = artists.first
+  
   @artistName = artist.name
-  @photoURL = artist.images[0]["url"]
-  @genres = artist.genres.join(", ")
-
+  
+  if artist.images.length > 0 && artist.images[0]["url"] != ""
+    @photoURL = artist.images[0]["url"]
+  end
+  
+  if artist.genres.length > 0
+    @genres = artist.genres.join(", ")
+  end
+  
   # get related artists
   relatedArtistsList = artist.related_artists
 
   @relatedArtists = Array.new
-
-  if relatedArtistsList.length > 0
-    while @relatedArtists.length < 5 && @relatedArtists.length < relatedArtistsList.length
+  
+  if relatedArtistsList.nil? || relatedArtistsList.length > 0
+    while @relatedArtists.length < 5 && @relatedArtists.length < relatedArtistsList.length - 1
       @relatedArtists.push(relatedArtistsList[@relatedArtists.length].name)
     end
 
@@ -84,7 +107,7 @@ get '/artist/:artist' do
 
   if topTracksList.length > 0
 
-    while @topTracks.length < 5
+    while @topTracks.length < 5 and @topTracks.length < topTracksList.length - 1
       name = topTracksList[@topTracks.length].name
 
       # get song title
@@ -123,7 +146,11 @@ get '/artist/:artist' do
 
       @genres = genreList.join(', ')
     end
+  end
 
+  # make sure @genres is not just a new line or some spaces
+  if @genres.nil? || @genres.sub(/[ \t]{2,}\z/, '') == ""
+    @genres = ""
   end
 
   # get artist biography
