@@ -7,6 +7,11 @@ require 'rspotify'
 # require_relative 'secret'
 
 
+# get config vars (API keys) from Heroku
+EN_API_KEY = ENV['EN_API_KEY']
+Y_API_KEY = ENV['Y_API_KEY']
+
+
 error 400..510 do
   redirect to('/error')
 end
