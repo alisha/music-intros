@@ -1,3 +1,3 @@
-require "music-intro"
+require "./music-intro"
 
 run Sinatra::Application
