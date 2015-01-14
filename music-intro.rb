@@ -3,7 +3,8 @@ require 'shotgun'
 require 'httparty'
 require 'json'
 require 'rspotify'
-require_relative 'secret'
+# uncomment the line below for running on local machines, where secret.rb contains API keys
+# require_relative 'secret'
 
 
 error 400..510 do
