@@ -184,6 +184,9 @@ get '/artist/:artist' do
     @biography = ""
   end
 
+  # get tour dates
+  
+
   erb :artist
 
 end
