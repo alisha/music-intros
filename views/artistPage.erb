@@ -1,6 +1,8 @@
 <div class="col-md-12">
   <h2><%= @artistName %></h2>
-  <p><%= @genres %></p>
+  <% if @genres != "" %>
+    <p><%= @genres %></p>
+  <% end %>
 </div>
 
 <div class="col-md-6">

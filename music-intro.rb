@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'shotgun'
 require 'httparty'
 require 'json'
 require 'rspotify'
@@ -8,7 +7,6 @@ require 'rspotify'
 
 
 # get config vars (API keys) from Heroku
-EN_API_KEY = ENV['EN_API_KEY']
 Y_API_KEY = ENV['Y_API_KEY']
 
 
@@ -19,25 +17,6 @@ end
 
 # home
 get '/' do
-  # get popular artists
-  artistsRequest = HTTParty.get("http://developer.echonest.com/api/v4/artist/top_hottt", :query => {
-    :api_key => EN_API_KEY,
-    :format => "json",
-    :results => 5
-  })
-
-  @topArtists = Array.new
-
-  artistsResponse = JSON.parse(artistsRequest.body)["response"]
-
-  if artistsResponse["status"]["code"] == 0 && artistsResponse["artists"].length > 0
-
-    artistsResponse["artists"].each do |artist|
-      @topArtists.push(artist["name"])
-    end
-
-  end
-
   erb :index
 end
 
@@ -127,30 +106,6 @@ get '/artist/:artist' do
 
       @youTubeURLs.push(url)
 
-    end
-  end
-
-  # get genres from EchoNest if they're not on Spotify
-  if @genres == ""
-    genreList = Array.new
-
-    genreRequest = HTTParty.get("http://developer.echonest.com/api/v4/artist/search", :query => {
-      :api_key => EN_API_KEY,
-      :name => @artistName,
-      :bucket => "genre",
-      :format => "json",
-      :results => 1
-    })
-
-    genreResponse = JSON.parse(genreRequest.body)["response"]
-
-    if genreResponse["status"]["code"] == 0 && genreResponse["artists"][0]["genres"].length > 0
-
-      genreResponse["artists"][0]["genres"].each do |genre|
-        genreList.push(genre["name"])
-      end
-
-      @genres = genreList.join(', ')
     end
   end
 
