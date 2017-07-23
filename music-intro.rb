@@ -3,11 +3,14 @@ require 'httparty'
 require 'json'
 require 'rspotify'
 # uncomment the line below for running on local machines, where secret.rb contains API keys
-require_relative 'secret'
+# require_relative 'secret'
 
 
 # get config vars (API keys) from Heroku
-# Y_API_KEY = ENV['Y_API_KEY']
+Y_API_KEY   = ENV['Y_API_KEY']
+S_API_KEY   = ENV['S_API_KEY']
+S_SECRET    = ENV['S_SECRET']
+LF_API_KEY  = ENV['LF_API_KEY']
 
 error 400..510 do
   redirect to('/error')
