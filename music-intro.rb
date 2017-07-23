@@ -3,12 +3,11 @@ require 'httparty'
 require 'json'
 require 'rspotify'
 # uncomment the line below for running on local machines, where secret.rb contains API keys
-# require_relative 'secret'
+require_relative 'secret'
 
 
 # get config vars (API keys) from Heroku
-Y_API_KEY = ENV['Y_API_KEY']
-
+# Y_API_KEY = ENV['Y_API_KEY']
 
 error 400..510 do
   redirect to('/error')
@@ -46,6 +45,7 @@ end
 
 
 get '/artist/:artist' do
+  RSpotify.authenticate(S_API_KEY, S_SECRET)
 
   # artist name
   artistName = params[:artist]
@@ -100,7 +100,7 @@ get '/artist/:artist' do
 
       # find YouTube video id
       query = "#{name} #{@artistName}".gsub(/[^0-9a-zA-Z ]/i, '').gsub(" ", "+")
-      songURLrequest = HTTParty.get("https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{query}&type=video&maxResults=1&key=#{Y_API_KEY}")
+      songURLrequest = HTTParty.get("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=#{query}&type=video&key=#{Y_API_KEY}")
 
       url = JSON.parse(songURLrequest.body)["items"][0]["id"]["videoId"]
 
@@ -138,9 +138,6 @@ get '/artist/:artist' do
   else
     @biography = ""
   end
-
-  # get tour dates
-  
 
   erb :artist
 
