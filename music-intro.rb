@@ -114,30 +114,16 @@ get '/artist/:artist' do
     @genres = ""
   end
 
-  # get artist biography
-  biographyRequest = HTTParty.get("http://developer.echonest.com/api/v4/artist/biographies", :query => {
-    :api_key => EN_API_KEY,
-    :name => @artistName,
-    :format => "json",
-    :results => 15
+  # get artist biography from last.fm
+  biographyRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/?method=artist.getinfo", :query => {
+    :api_key => LF_API_KEY,
+    :artist => @artistName,
+    :format => "json"
   })
 
   biographyResponse = JSON.parse(biographyRequest.body)
 
-  if biographyResponse["response"]["status"]["code"] == 0 && biographyResponse["response"]["biographies"].length > 0
-    
-    # biographies must be at least 15 words
-    biographyResponse = biographyResponse["response"]["biographies"].sort_by {|x| x["text"].length}
-
-    biographyResponse.each do |bio|
-      if bio["text"].split(' ').length > 15
-        @biography = bio["text"]
-        break
-      end
-    end
-  else
-    @biography = ""
-  end
+  @biography = biographyResponse["artist"]["bio"]["content"]
 
   erb :artist
 
