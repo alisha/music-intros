@@ -18,8 +18,13 @@
       <p><b>Genres:</b> <%= @genres %></p>
     <% end %>
 
-    <% if @relatedArtists != "" %>
-      <p><b>Related artists:</b> <%= @relatedArtists %></p>
+    <% if @relatedArtists.length != 0 %>
+      <p><b>Related artists:</b> 
+        <% @relatedArtists.each do |artist| %>
+          <a href="<%=artist%>"><%=artist%></a>
+          <%= ", " unless artist == @relatedArtists.last %>
+        <% end %>
+      </p>
     <% end %>
 
     <img src="<%=@photoURL%>">

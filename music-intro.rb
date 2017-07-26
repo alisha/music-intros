@@ -82,11 +82,10 @@ get '/artist/:artist' do
   @genres = genres.join(", ")
 
   # get related artists
-  relatedArtists = []
+  @relatedArtists = []
   for band in artist["similar"]["artist"]
-    relatedArtists.push(band["name"])
+    @relatedArtists.push(band["name"])
   end
-  @relatedArtists = relatedArtists.join(", ")
 
   # get top tracks
   topTracksRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/", :query => {
