@@ -47,49 +47,50 @@ end
 
 
 get '/artist/:artist' do
-  RSpotify.authenticate(S_API_KEY, S_SECRET)
-
-  # artist name
   artistName = params[:artist]
   
   # get name, photo, and genres
-  artistRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/?method=artist.getinfo", :query => {
+  artistRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/", :query => {
+    :method => "artist.getinfo",
+    :artist => artistName,
     :api_key => LF_API_KEY,
-    :artist => @artistName,
     :format => "json"
   })
-
+  
   artistResponse = JSON.parse(artistRequest.body)
-  puts artistResponse
   artist = artistResponse["artist"]
 
   @artistName = artist["name"]
 
   # get picture, try for largest photo possible
-  @photoURL = artist["image size=\"large\""]
-  if @photoURL.nil?
-    @photoURL = artist["image size=\"medium\""]
+  @photoURL = ""
+  photos = artist["image"]
+  for photo in photos
+    if photo["size"] != ""
+      @photoURL = photo["#text"]
+    end
   end
-  if @photoURL.nil?
-    @photoURL = artist["image size=\"small\""]
-  end
+  puts @photoURL
 
   @biography = artist["bio"]["content"]
 
   # get genres
-  @genres = []
-  for genre in artist.tags
-    @genres.push(genre["name"])
+  genres = []
+  for genre in artist["tags"]["tag"]
+    genres.push(genre["name"])
   end
+  @genres = genres.join(", ")
 
   # get related artists
-  @relatedArtists = []
-  for band in artist.similar
-    @relatedArtists.push(band["name"])
+  relatedArtists = []
+  for band in artist["similar"]["artist"]
+    relatedArtists.push(band["name"])
   end
+  @relatedArtists = relatedArtists.join(", ")
 
   # get top tracks
-  topTracksRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks", :query => {
+  topTracksRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/", :query => {
+    :method => "artist.gettoptracks",
     :api_key => LF_API_KEY,
     :artist => @artistName,
     :limit => 5,
@@ -101,9 +102,9 @@ get '/artist/:artist' do
   @topTracks = []
   @youTubeURLs = []
 
-  (1..5).each do |i|
+  for i in 0..4 do
     # song titles from last.fm
-    title = topTracksResponse["track rank=\"#{i}\""]["name"]
+    title = topTracksResponse["toptracks"]["track"][i]["name"]
     @topTracks.push(title)
 
     # find song on YouTube
