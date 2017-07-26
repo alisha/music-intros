@@ -3,7 +3,7 @@ require 'httparty'
 require 'json'
 require 'rspotify'
 # uncomment the line below for running on local machines, where secret.rb contains API keys
-require_relative 'secret'
+# require_relative 'secret'
 
 # get config vars (API keys) from Heroku
 # Y_API_KEY = ENV['Y_API_KEY']
