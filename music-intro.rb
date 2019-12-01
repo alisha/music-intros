@@ -62,16 +62,6 @@ get '/artist/:artist' do
 
   @artistName = artist["name"]
 
-  # get picture, try for largest photo possible
-  @photoURL = ""
-  photos = artist["image"]
-  for photo in photos
-    if photo["size"] != ""
-      @photoURL = photo["#text"]
-    end
-  end
-  puts @photoURL
-
   @biography = artist["bio"]["content"]
 
   # get genres
@@ -107,7 +97,7 @@ get '/artist/:artist' do
     @topTracks.push(title)
 
     # find song on YouTube
-    query = "#{title} #{@artistName}".gsub(/[^0-9a-zA-Z ]/i, '').gsub(" ", "+")
+    query = "\"#{title}\" \"#{@artistName}\" song".gsub(/[^0-9a-zA-Z ]/i, '').gsub(" ", "+")
     songURLrequest = HTTParty.get("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=#{query}&type=video&key=#{Y_API_KEY}")
     url = JSON.parse(songURLrequest.body)["items"][0]["id"]["videoId"]
     @youTubeURLs.push(url)
