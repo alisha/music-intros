@@ -56,7 +56,7 @@ get '/artist/:artist' do
     :api_key => LF_API_KEY,
     :format => "json"
   })
-  
+
   artistResponse = JSON.parse(artistRequest.body)
   artist = artistResponse["artist"]
 
@@ -76,6 +76,11 @@ get '/artist/:artist' do
   for band in artist["similar"]["artist"]
     @relatedArtists.push(band["name"])
   end
+
+  # get photo from spotify
+  RSpotify.authenticate(S_API_KEY, S_SECRET)
+  spotify_artist = RSpotify::Artist.search(artistName).first
+  @photoURL = spotify_artist.images[0]["url"]
 
   # get top tracks
   topTracksRequest = HTTParty.get("https://ws.audioscrobbler.com/2.0/", :query => {

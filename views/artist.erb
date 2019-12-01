@@ -27,12 +27,7 @@
       </p>
     <% end %>
 
-    <% if @biography != "" %>
-      <div class="biography">
-        <h3>Biography</h3>
-        <%= @biography %>
-      </div>
-    <% end %>
+    <img src="<%=@photoURL%>">
   </div>
 
   <% if @topTracks.length > 0 %>
@@ -49,3 +44,9 @@
   <% end %>
 </div>
 
+<% if @biography != "" %>
+  <div class="col-md-12 biography">
+    <h3>Biography</h3>
+    <%= @biography %>
+  </div>
+<% end %>
