@@ -100,12 +100,6 @@ get '/artist/:artist' do
     # song titles from last.fm
     title = topTracksResponse["toptracks"]["track"][i]["name"]
     @topTracks.push(title)
-
-    # find song on YouTube
-    query = "\"#{title}\" \"#{@artistName}\" song".gsub(/[^0-9a-zA-Z ]/i, '').gsub(" ", "+")
-    songURLrequest = HTTParty.get("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=#{query}&type=video&key=#{Y_API_KEY}")
-    url = JSON.parse(songURLrequest.body)["items"][0]["id"]["videoId"]
-    @youTubeURLs.push(url)
   end
 
   erb :artist
